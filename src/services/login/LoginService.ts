@@ -1,9 +1,9 @@
-import { hash, compare } from "bcryptjs";
+import { compare } from "bcryptjs";
 import { LoginRequest } from "../../models/interfaces/login/LoginRequest";
 import prismaClient from "../../prisma";
 
 class LoginService {
-  async execute({ email, password }: LoginRequest) {
+  static async execute({ email, password }: LoginRequest) {
     const userAlreadyExists = await prismaClient.user.findFirst({
       where: {
         email: email,

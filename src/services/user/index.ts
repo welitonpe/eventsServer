@@ -2,8 +2,8 @@ import prismaClient from "../../prisma";
 import { hash } from "bcryptjs";
 import { UserRequest } from "../../models/interfaces/user/UserRequest";
 
-class CreateUserService {
-  async execute({ name, email, familyName, password }: UserRequest) {
+class UserService {
+  static async create({ name, email, familyName, password }: UserRequest) {
     if (!email) {
       throw new Error("Email incorrect");
     }
@@ -37,6 +37,37 @@ class CreateUserService {
 
     return user;
   }
+
+  static async findByEmail(email: string) {
+    const user = await prismaClient.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    return user;
+  }
+
+  static async findUserById(id: string) {
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id, RefreshToken: {
+          some: {
+            revoked: false
+          }
+        }
+      },
+      select: {
+        id: true,
+        name: true,
+        familyName: true,
+        email: true,
+        RefreshToken: true
+      },
+    });
+
+    return user;
+  }
 }
 
-export { CreateUserService };
+export { UserService };

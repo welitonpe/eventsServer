@@ -11,13 +11,14 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  name       String
-  familyName String
-  email      String
-  password   String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now())
+  id           String         @id @default(uuid())
+  name         String
+  familyName   String
+  email        String         @unique
+  password     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @default(now())
+  RefreshToken RefreshToken[]
 
   @@map("users")
 }
@@ -60,4 +61,14 @@ model Item {
   product_id String
 
   @@map("items")
+}
+
+model RefreshToken {
+  id          String   @id @unique @default(uuid())
+  hashedToken String
+  userId      String
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
